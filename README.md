@@ -1,6 +1,6 @@
 # usque-rs
 
-A tiny Rust rewrite of my previous [usque](https://github.com/Diniboy1123/usque) project. The goal is simple: a decently fast, native tunnel using Cloudflare WARP and its MASQUE-based protocol. 
+A tiny Rust rewrite of my previous [usque](https://github.com/Diniboy1123/usque) project. The goal is simple: a decently fast, native tunnel using Cloudflare WARP and its MASQUE-based protocol.
 
 This is just the `nativetun` implementation from the [Go version](https://github.com/Diniboy1123/usque/blob/main/README.md#native-tunnel-mode-for-advanced-users-linux-and-windows-only) and it's **Linux-only**. If you need proxy support or other platforms, this isn't for you. Check the docs over there to understand the project better.
 
@@ -27,6 +27,10 @@ Since my router is a literal **hot potato**, I wanted to get this working with z
 ## Is it PQC ready?
 
 **No.** It's not a priority right now. Lattice-based math usually eats more RAM and comes with much larger key sizes—two things I really don't want running on a resource-constrained router.
+
+## Performance
+
+Still needs to be measured properly, but it is able to max out my 150 Mbit/s residential downstream and 30 Mbit/s upstream network on a `Cudy WR3000P v1` with some Mediatek 1.3 GHz Dual-Core Cortex-A53 CPU with a load avg of 0.4 during the speedtest. That is good enough for my goals. And memory usage was optimized for as less copies as possible.
 
 ## Disclaimer
 

@@ -41,11 +41,18 @@ jobs:
             artifact_name: usque-rs-armv5te-linux-musleabi
 
           # ── Android ──────────────────────────────────────────────────────
+          # ANDROID_NDK_HOME must point to the NDK r26c installed by Cross.toml
+          # pre-build steps inside the container. The CI runner's own NDK path
+          # is overridden here so quiche's build script finds the right toolchain.
           - target: aarch64-linux-android
             artifact_name: usque-rs-aarch64-linux-android
+            android_ndk_home: /opt/android-ndk
+            android_linker: /opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang
 
           - target: armv7-linux-androideabi
             artifact_name: usque-rs-armv7-linux-androideabi
+            android_ndk_home: /opt/android-ndk
+            android_linker: /opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi21-clang
 
           # ── MIPS (OpenWrt routers) ────────────────────────────────────────
           # mipsel = little-endian (MIPS24Kc etc.); big-endian mips and
@@ -79,6 +86,9 @@ jobs:
       - name: Build (release)
         env:
           CARGO_PROFILE_RELEASE_PANIC: ${{ matrix.panic_strategy || 'abort' }}
+          ANDROID_NDK_HOME: ${{ matrix.android_ndk_home || '' }}
+          CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER: ${{ matrix.android_linker || '' }}
+          CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER: ${{ matrix.android_linker || '' }}
         run: cross build --release --target ${{ matrix.target }}
 
       - name: Strip binary

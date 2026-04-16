@@ -86,7 +86,7 @@ enum Commands {
         no_iproute2: bool,
         #[arg(short = 'n', long)]
         interface_name: Option<String>,
-        /// Pre-opened TUN file descriptor (Android: pass fd from VpnService.establish())
+        /// Pre-opened TUN file descriptor (Android: pass fd from `VpnService.establish()`)
         #[arg(long)]
         tun_fd: Option<i32>,
     },

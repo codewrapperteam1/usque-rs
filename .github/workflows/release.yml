@@ -40,6 +40,13 @@ jobs:
           - target: armv5te-unknown-linux-musleabi
             artifact_name: usque-rs-armv5te-linux-musleabi
 
+          # ── Android ──────────────────────────────────────────────────────
+          - target: aarch64-linux-android
+            artifact_name: usque-rs-aarch64-linux-android
+
+          - target: armv7-linux-androideabi
+            artifact_name: usque-rs-armv7-linux-androideabi
+
           # ── MIPS (OpenWrt routers) ────────────────────────────────────────
           # mipsel = little-endian (MIPS24Kc etc.); big-endian mips and
           # mips64el are excluded: BoringSSL doesn't support those processors

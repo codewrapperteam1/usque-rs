@@ -15,6 +15,50 @@ pre-build = [
     "ln -sf /usr/local/go/bin/go /usr/local/bin/go",
 ]
 
+# quiche's build script requires a full NDK (with build/cmake/android.toolchain.cmake).
+# The cross Android images only ship the stripped toolchain, so we download NDK r26c.
+# quiche's build script requires a full NDK (with build/cmake/android.toolchain.cmake).
+# The cross Android images only ship the stripped toolchain, so we download NDK r26c.
+# quiche's build script requires a full NDK (with build/cmake/android.toolchain.cmake).
+# The cross Android images only ship a stripped toolchain at /android-ndk, so we:
+#   1. Download NDK r26c which has the full CMake toolchain file.
+#   2. Point ANDROID_NDK_HOME at it.
+#   3. Redirect the old stripped NDK's gcc/ld wrappers to the new NDK's clang,
+#      so that quiche's cdylib link step uses the correct linker.
+[target.aarch64-linux-android]
+pre-build = [
+    "apt-get install -y --no-install-recommends unzip",
+    "curl -sSfL https://dl.google.com/android/repository/android-ndk-r26c-linux.zip -o /tmp/ndk.zip",
+    "unzip -q /tmp/ndk.zip -d /opt && rm /tmp/ndk.zip",
+    "ln -sf /opt/android-ndk-r26c /opt/android-ndk",
+    "ln -sf /opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang /android-ndk/bin/aarch64-linux-android-gcc",
+    "ln -sf /opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang /android-ndk/bin/aarch64-linux-android-g++",
+    "ln -sf /opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar /android-ndk/bin/aarch64-linux-android-ar",
+]
+
+[target.aarch64-linux-android.env]
+passthrough = [
+    "ANDROID_NDK_HOME",
+    "CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER",
+]
+
+[target.armv7-linux-androideabi]
+pre-build = [
+    "apt-get install -y --no-install-recommends unzip",
+    "curl -sSfL https://dl.google.com/android/repository/android-ndk-r26c-linux.zip -o /tmp/ndk.zip",
+    "unzip -q /tmp/ndk.zip -d /opt && rm /tmp/ndk.zip",
+    "ln -sf /opt/android-ndk-r26c /opt/android-ndk",
+    "ln -sf /opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi21-clang /android-ndk/bin/arm-linux-androideabi-gcc",
+    "ln -sf /opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi21-clang /android-ndk/bin/arm-linux-androideabi-g++",
+    "ln -sf /opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar /android-ndk/bin/arm-linux-androideabi-ar",
+]
+
+[target.armv7-linux-androideabi.env]
+passthrough = [
+    "ANDROID_NDK_HOME",
+    "CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER",
+]
+
 # mipsel: rust-std removed from stable; cross will build it from source via nightly.
 [target.mipsel-unknown-linux-musl]
 build-std = true

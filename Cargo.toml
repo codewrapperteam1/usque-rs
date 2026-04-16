@@ -36,7 +36,7 @@ sec1 = { version = "0.7", features = ["pkcs8", "der", "pem"] }
 der = { version = "0.7", features = ["pem"] }
 pkcs8 = { version = "0.10", features = ["pem", "std"] }
 tun = { version = "0.7", features = ["async"] }
-rtnetlink = "0.14"
+rtnetlink = "0.20"
 netlink-packet-route = "0.21"
 futures = "0.3"
 tempfile = "3"

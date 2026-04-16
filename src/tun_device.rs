@@ -33,8 +33,20 @@ pub fn create_tun(cfg: &TunConfig) -> Result<tun::Device> {
     Ok(dev)
 }
 
+/// Adopt a pre-opened TUN file descriptor (e.g. from Android's `VpnService.establish()`).
+/// Address configuration must be done by the caller before passing the fd.
+pub fn create_tun_from_fd(cfg: &TunConfig, fd: i32) -> Result<tun::Device> {
+    let mut tun_cfg = tun::Configuration::default();
+    tun_cfg.raw_fd(fd);
+    tun_cfg.mtu(u16::try_from(cfg.mtu).unwrap_or(u16::MAX));
+    let dev = tun::create(&tun_cfg).context("failed to adopt TUN fd")?;
+    log::info!("TUN device adopted from fd {fd}");
+    Ok(dev)
+}
+
 pub async fn configure_tun(cfg: &TunConfig, dev: &tun::Device) -> Result<()> {
     use futures::stream::TryStreamExt;
+    use rtnetlink::LinkUnspec;
 
     let tun_name = dev
         .tun_name()
@@ -55,8 +67,7 @@ pub async fn configure_tun(cfg: &TunConfig, dev: &tun::Device) -> Result<()> {
 
     handle
         .link()
-        .set(link_index)
-        .mtu(cfg.mtu)
+        .set(LinkUnspec::new_with_index(link_index).mtu(cfg.mtu).build())
         .execute()
         .await
         .context("failed to set MTU")?;
@@ -86,8 +97,7 @@ pub async fn configure_tun(cfg: &TunConfig, dev: &tun::Device) -> Result<()> {
 
     handle
         .link()
-        .set(link_index)
-        .up()
+        .set(LinkUnspec::new_with_index(link_index).up().build())
         .execute()
         .await
         .context("failed to bring link up")?;
